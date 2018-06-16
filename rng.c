@@ -5,32 +5,15 @@
  * Copyright (C) 2018 Sijmen J. Mulder <ik@sjmulder.nl>
  */
 
-#include <ctype.h>
-#include <errno.h>
-#include <getopt.h>
-#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-
-#ifdef __APPLE__
-#include <limits.h>
-#else
-#include <linux/limits.h>
-#endif
-
-#define is_null(ptr) ((ptr) == ((void *) 0))
+#include <getopt.h>
 
 #define PROGNAME "rng"
 #define RNG_VERSION "1.0.0"
 
-#define _GNU_SOURCE
-#define NULL_DEVICE "/dev/null"
-#define NULL_BYTE 1
-
 #define NUM_OPTIONS 2
-#define OPT_DELIMIT "--"
 
 typedef struct {
 	char *value;
