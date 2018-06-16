@@ -13,54 +13,11 @@
 #define PROGNAME "rng"
 #define RNG_VERSION "1.0.0"
 
-#define NUM_OPTIONS 2
-
-typedef struct {
-	char *value;
-	char *alias;
-	char *desc;
-} option_t;
-
-static option_t options[] = {
-	{
-		"--help",
-		"-h",
-		"Show help information.",
-	},
-	{
-		"--version",
-		"-v",
-		"Show version number.",
-	},
-};
-
-/**
- * Print usage information.
- */
-static void usage (void) {
-	int index;
-	char fvalue[36];
-
-	fprintf(stdout, "Usage: rng [OPTIONS]\n\n");
-	fprintf(stdout, "OPTIONS:\n\n");
-
-	for (index = 0; index < NUM_OPTIONS; index += 1) {
-		option_t *option = &options[index];
-
-		/**
-		 * Format option->value string.
-		 */
-		snprintf(fvalue, sizeof(fvalue), "%s,", option->value);
-		fprintf(stdout, "%4s%-22s %s: %-24s\n", "", fvalue, option->alias, option->desc);
-	}
-}
-
-/**
- * Usage:
- *
- * rng 5,35 < filename
- * cat filename | rng 5,35
- */
+static const char usage[] =
+"Usage: rng [OPTIONS]\n\n"
+"OPTIONS:\n\n"
+" -h, --help     Show help information.\n"
+" -v, --version  Show version number.\n";
 
 int main (int argc, char **argv) {
 	int count, index, start, end, opt_value, long_opt_index;
@@ -78,16 +35,13 @@ int main (int argc, char **argv) {
 	while ((opt_value = getopt_long(argc, argv, "hv", long_options, &long_opt_index)) != -1) {
 		switch (opt_value) {
 			case 'h':
-				usage();
-
+				fputs(usage, stderr);
 				exit(EXIT_SUCCESS);
 			case 'v':
 				fprintf(stdout, "%s\n", RNG_VERSION);
-
 				exit(EXIT_SUCCESS);
 			case '?':
-				usage();
-
+				fputs(usage, stderr);
 				exit(EXIT_FAILURE);
 		}
 	}
@@ -108,7 +62,7 @@ int main (int argc, char **argv) {
 		for (c = token; *c; c++) {
 			if (*c < '0' || *c > '9') {
 				fprintf(stderr, "%s: '%s' is not a valid integer\n\n", PROGNAME, token);
-				usage();
+				fputs(usage, stderr);
 				exit(EXIT_FAILURE);
 			}
 		}
