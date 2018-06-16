@@ -13,7 +13,6 @@
 #include <fcntl.h>
 #include "common.h"
 #include "assert.h"
-#include "mem.h"
 
 /**
  * String utilities

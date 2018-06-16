@@ -53,8 +53,7 @@ int main (int argc, char **argv) {
 	start = 0;
 	end = 0;
 
-	range = ALLOC(sizeof(argv[1]));
-	copy(range, argv[1]);
+	range = argv[1];
 
 	while ((token = strsep(&range, ","))) {
 		if (!is_numeric(token)) {
