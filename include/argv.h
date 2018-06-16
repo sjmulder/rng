@@ -8,7 +8,6 @@
 #define RNG_ARGV_H
 
 #include "common.h"
-#include "error.h"
 #include "utils.h"
 
 #define NUM_OPTIONS 2
