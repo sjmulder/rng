@@ -11,7 +11,7 @@
 int
 main(int argc, char **argv)
 {
-	int start, end, line=1, c;
+	int start, end=0, line=1, c;
 
 	(void)argc;
 	(void)argv;
@@ -21,7 +21,7 @@ main(int argc, char **argv)
 		return 1;
 	}
 
-	if (sscanf(argv[1], "%d,%d", &start, &end) != 2)
+	if (sscanf(argv[1], "%d,%d", &start, &end) < 1)
 		errx(1, "invalid range format");
 
 	while ((c = getchar()) != EOF) {
