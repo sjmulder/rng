@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
+#include <err.h>
 
 #define PROGNAME "rng"
 #define RNG_VERSION "1.0.0"
@@ -46,11 +47,8 @@ int main (int argc, char **argv) {
 		}
 	}
 
-	if (argc != 2) {
-		fprintf(stderr, "%s: Invalid number of arguments\n", PROGNAME);
-
-		exit(EXIT_FAILURE);
-	}
+	if (argc != 2)
+		errx(1, "invalid number of arguments");
 
 	index = 0;
 	start = 0;
@@ -59,13 +57,9 @@ int main (int argc, char **argv) {
 	range = argv[1];
 
 	while ((token = strsep(&range, ","))) {
-		for (c = token; *c; c++) {
-			if (*c < '0' || *c > '9') {
-				fprintf(stderr, "%s: '%s' is not a valid integer\n\n", PROGNAME, token);
-				fputs(usage, stderr);
-				exit(EXIT_FAILURE);
-			}
-		}
+		for (c = token; *c; c++)
+			if (*c < '0' || *c > '9')
+				errx(1, "not a valid line number: %s", token);
 
 		switch (index) {
 			case 0:
