@@ -35,9 +35,7 @@ void usage (void) {
 		/**
 		 * Format option->value string.
 		 */
-		copy(fvalue, option->value);
-		concat(fvalue, ",");
-
+		snprintf(fvalue, sizeof(fvalue), "%s,", option->value);
 		fprintf(stdout, "%4s%-22s %s: %-24s\n", "", fvalue, option->alias, option->desc);
 	}
 }

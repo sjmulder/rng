@@ -15,7 +15,7 @@
 
 int main (int argc, char **argv) {
 	int count, index, start, end, opt_value, long_opt_index;
-	char *line, *range, *token;
+	char *line, *range, *token, *c;
 	size_t len;
 	ssize_t read;
 
@@ -56,12 +56,12 @@ int main (int argc, char **argv) {
 	range = argv[1];
 
 	while ((token = strsep(&range, ","))) {
-		if (!is_numeric(token)) {
-			fprintf(stderr, "%s: '%s' is not a valid integer\n\n", PROGNAME, token);
-
-			usage();
-
-			exit(EXIT_FAILURE);
+		for (c = token; *c; c++) {
+			if (*c < '0' || *c > '9') {
+				fprintf(stderr, "%s: '%s' is not a valid integer\n\n", PROGNAME, token);
+				usage();
+				exit(EXIT_FAILURE);
+			}
 		}
 
 		switch (index) {

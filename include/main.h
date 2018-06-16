@@ -10,6 +10,5 @@
 #include "common.h"
 #include "assert.h"
 #include "argv.h"
-#include "utils.h"
 
 #endif /* RNG_MAIN_H */
