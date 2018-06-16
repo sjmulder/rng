@@ -5,9 +5,6 @@ CFLAGS += -Iinclude/
 
 all: rng
 
-rng: src/*.c include/*.h
-	$(CC) $(CFLAGS) $(LDFLAGS) -o$@ src/*.c $(LDLIBS)
-
 clean:
 	rm -f rng
 

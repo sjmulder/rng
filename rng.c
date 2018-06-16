@@ -1,10 +1,76 @@
 /**
- * main.c
+ * rng.c
  *
  * Copyright (C) 2018 Nickolas Burr <nickolasburr@gmail.com>
+ * Copyright (C) 2018 Sijmen J. Mulder <ik@sjmulder.nl>
  */
 
-#include "main.h"
+#include <ctype.h>
+#include <errno.h>
+#include <getopt.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#ifdef __APPLE__
+#include <limits.h>
+#else
+#include <linux/limits.h>
+#endif
+
+#define is_null(ptr) ((ptr) == ((void *) 0))
+
+#define PROGNAME "rng"
+#define RNG_VERSION "1.0.0"
+
+#define _GNU_SOURCE
+#define NULL_DEVICE "/dev/null"
+#define NULL_BYTE 1
+
+#define NUM_OPTIONS 2
+#define OPT_DELIMIT "--"
+
+typedef struct {
+	char *value;
+	char *alias;
+	char *desc;
+} option_t;
+
+static option_t options[] = {
+	{
+		"--help",
+		"-h",
+		"Show help information.",
+	},
+	{
+		"--version",
+		"-v",
+		"Show version number.",
+	},
+};
+
+/**
+ * Print usage information.
+ */
+static void usage (void) {
+	int index;
+	char fvalue[36];
+
+	fprintf(stdout, "Usage: rng [OPTIONS]\n\n");
+	fprintf(stdout, "OPTIONS:\n\n");
+
+	for (index = 0; index < NUM_OPTIONS; index += 1) {
+		option_t *option = &options[index];
+
+		/**
+		 * Format option->value string.
+		 */
+		snprintf(fvalue, sizeof(fvalue), "%s,", option->value);
+		fprintf(stdout, "%4s%-22s %s: %-24s\n", "", fvalue, option->alias, option->desc);
+	}
+}
 
 /**
  * Usage:
