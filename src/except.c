@@ -4,8 +4,8 @@
  * Copyright (C) 2018 Nickolas Burr <nickolasburr@gmail.com>
  */
 
+#include <assert.h>
 #include "common.h"
-#include "assert.h"
 #include "except.h"
 
 #define T Except_T
