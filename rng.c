@@ -6,16 +6,12 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <err.h>
 
 int
-main(int argc, char **argv) {
-	int count, start, end;
-	char *line;
-	size_t len;
-	ssize_t read;
+main(int argc, char **argv)
+{
+	int start, end, line=1, c;
 
 	(void)argc;
 	(void)argv;
@@ -28,15 +24,12 @@ main(int argc, char **argv) {
 	if (sscanf(argv[1], "%d,%d", &start, &end) != 2)
 		errx(1, "invalid range format");
 
-	count = 1;
-
-	while ((read = getline(&line, &len, stdin)) != -1) {
-		if (count >= start && (count <= end || !end)) {
-			fwrite(line, read, 1, stdout);
-		}
-
-		count++;
+	while ((c = getchar()) != EOF) {
+		if (line >= start && (!end || line <= end))
+			putchar(c);
+		if (c == '\n')
+			line++;
 	}
 
-	return EXIT_SUCCESS;
+	return 0;
 }
