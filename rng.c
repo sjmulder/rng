@@ -6,7 +6,6 @@
  */
 
 #include <stdio.h>
-#include <err.h>
 
 int
 main(int argc, char **argv)
@@ -21,8 +20,10 @@ main(int argc, char **argv)
 		return 1;
 	}
 
-	if (sscanf(argv[1], "%d,%d", &start, &end) < 1)
-		errx(1, "invalid range format");
+	if (sscanf(argv[1], "%d,%d", &start, &end) < 1) {
+		fprintf(stderr, "%s: invalid range format\n", *argv);
+		return 1;
+	}
 
 	while ((c = getchar()) != EOF) {
 		if (line >= start && (!end || line <= end))
