@@ -1,43 +1,20 @@
-###
-### Makefile
-###
+prefix ?= /usr/local
+bindir ?= $(prefix)/bin
 
-CC      = gcc
-TARGET  = rng
-INSTALL = /usr/bin/install -c
+CFLAGS += -Iinclude/
 
-prefix = /usr/local
-bindir = $(prefix)/bin
-binprefix =
+all: rng
 
-ARFLAGS = rcs
-RM      = rm
-RMFLAGS = -rf
-
-INCLUDE = include
-SOURCES = src
-TOOLS   = tools
-
-CSFILES = $(wildcard $(SOURCES)/*.c)
-OBFILES = $(patsubst %.c,%.o,$(CSFILES))
-
-KERNEL := $(shell sh -c 'uname -s 2>/dev/null || echo unknown')
-
-CFLAGS  = -I$(INCLUDE)
-LDFLAGS = -pthread -lz
-
-.PHONY: all clean install uninstall
-
-all: $(TARGET)
-
-$(TARGET): $(CSFILES)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+rng: src/*.c include/*.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -o$@ src/*.c $(LDLIBS)
 
 clean:
-	@cd $(TOOLS) && ./clean.sh
+	rm -f rng
 
-install:
-	@cd $(TOOLS) && ./install.sh
+install: rng
+	install -c rng $(bindir)/
 
 uninstall:
-	@cd $(TOOLS) && ./uninstall.sh
+	rm -f $(bindir)/rng
+
+.PHONY: all clean install uninstall
