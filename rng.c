@@ -20,9 +20,27 @@ static const char usage[] =
 " -h, --help     Show help information.\n"
 " -v, --version  Show version number.\n";
 
+static void
+parse_range(char *s, int *start, int *end)
+{
+	char *endptr;
+
+	*start = (int)strtol(s, &endptr, 10);
+	if (s == endptr || (*endptr && *endptr != ','))
+		errx(1, "invalid start line number");
+
+	if (*endptr == ',') {
+		s = endptr+1;
+		*end = (int)strtol(s, &endptr, 10);
+		if (s == endptr || *endptr)
+			errx(1, "invalid end line number");
+	} else
+		*end = 0;
+}
+
 int main (int argc, char **argv) {
-	int count, index, start, end, opt_value, long_opt_index;
-	char *line, *range, *token, *c;
+	int count, start, end, opt_value, long_opt_index;
+	char *line;
 	size_t len;
 	ssize_t read;
 
@@ -50,33 +68,7 @@ int main (int argc, char **argv) {
 	if (argc != 2)
 		errx(1, "invalid number of arguments");
 
-	index = 0;
-	start = 0;
-	end = 0;
-
-	range = argv[1];
-
-	while ((token = strsep(&range, ","))) {
-		for (c = token; *c; c++)
-			if (*c < '0' || *c > '9')
-				errx(1, "not a valid line number: %s", token);
-
-		switch (index) {
-			case 0:
-				start = atoi(token);
-
-				break;
-			case 1:
-				end = atoi(token);
-
-				break;
-			default:
-				break;
-		}
-
-		index++;
-	}
-
+	parse_range(argv[1], &start, &end);
 	count = 1;
 
 	while ((read = getline(&line, &len, stdin)) != -1) {
