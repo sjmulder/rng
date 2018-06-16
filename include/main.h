@@ -9,7 +9,6 @@
 
 #include "common.h"
 #include "assert.h"
-#include "except.h"
 #include "argv.h"
 #include "utils.h"
 
