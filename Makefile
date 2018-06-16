@@ -1,7 +1,7 @@
 prefix ?= /usr/local
 bindir ?= $(prefix)/bin
 
-CFLAGS += -Iinclude/
+CFLAGS += -Wall -Wextra -pedantic -Iinclude/
 
 all: rng
 
