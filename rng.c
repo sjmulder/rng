@@ -1,9 +1,4 @@
-/**
- * rng.c
- *
- * Copyright (C) 2018 Nickolas Burr <nickolasburr@gmail.com>
- * Copyright (C) 2018 Sijmen J. Mulder <ik@sjmulder.nl>
- */
+/* rng.c - Copyright (c) 2018 Sijmen J. Mulder, see LICENSE.md */
 
 #include <stdio.h>
 
