@@ -1,5 +1,7 @@
 prefix ?= /usr/local
 bindir ?= $(prefix)/bin
+mandir ?= $(prefix)/man
+man1dir ?= $(mandir)/man1
 
 CFLAGS += -Wall -Wextra -pedantic
 
@@ -9,9 +11,10 @@ clean:
 	rm -f rng
 
 install: rng
-	install -c rng $(bindir)/
+	install rng $(bindir)/
+	install rng.1 $(man1dir)/
 
 uninstall:
-	rm -f $(bindir)/rng
+	rm -f $(bindir)/rng $(man1dir)/rng.1
 
 .PHONY: all clean install uninstall
