@@ -1,0 +1,33 @@
+.\" rng.1 - Copyright (c) 2018, Sijmen J. Mulder
+.Dd June 17, 2018
+.Dt RNG 1
+.Os
+.Sh NAME
+.Nm rng
+.Nd copy a range of lines
+.Sh SYNOPSIS
+.Nm
+from[,to]
+.Sh DESCRIPTION
+.Nm
+copies lines
+.Ar from
+through
+.Ar to
+(inclusive) from standard input to standard output.
+Lines start at number 1.
+.Sh EXAMPLES
+Get lines 7-15 in a file:
+.Pp
+.Dl $ rng 7,15 <file.txt
+.Pp
+Skip the first 4 lines of input:
+.Pp
+.Dl $ echo -e \(dqFirst\enSecond\enThird\enFourth\enFifth\en\(dq | rng 5
+.Sh AUTHORS
+Originally by
+.An Nickolas Burr
+.Aq Mt nickolasburr@gmail.com .
+Rewritten by
+.An Sijmen J. Mulder
+.Aq Mt ik@sjmulder.nl .
