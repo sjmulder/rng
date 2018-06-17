@@ -4,11 +4,11 @@ Copy a range of lines from standard input to standard output.
 
 ## Synopsis
 
-    rng from[,to]
+**rng** _from_[,_to_]
 
 ## Description
 
-rng copies lines from through to (inclusive) from standard input to
+**rng** copies lines _from_ through _to_ (inclusive) from standard input to
 standard output. Lines start at number 1.
 
 ## Examples
