@@ -90,12 +90,10 @@ main(int argc, char **argv)
 
 	i = 0;
 	while ((c = getchar()) != EOF) {
-		while (i<n && line > ranges[i].to)
-			i++;
-		if (i<n && line >= ranges[i].from)
+		if (line >= ranges[i].from)
 			putchar(c);
-		if (c == '\n')
-			line++;
+		if (c == '\n' && ++line > ranges[i].to && ++i >= n)
+			break;
 	}
 
 	return 0;
