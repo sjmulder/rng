@@ -63,11 +63,58 @@ parse_range(char *s, struct range *range)
 	return 0;
 }
 
+static void
+process_singlepass(struct range *ranges, int n)
+{
+	int i=0, line=1, c;
+
+	while ((c = getchar()) != EOF) {
+		if (line >= ranges[i].from)
+			putchar(c);
+		if (c == '\n' && ++line > ranges[i].to && ++i >= n)
+			break;
+	}
+}
+
+static void
+process_buffered(struct range *ranges, int n)
+{
+	char *buf;
+	size_t cap=4096, len=0, nread, pos=0;
+	int i, line=1;
+
+	if (!(buf = malloc(cap)))
+		fatal("malloc failed");
+
+	/* read the entire file first */
+	while ((nread = fread(buf+len, 1, cap-len, stdin)) > 0) {
+		len += nread;
+		if (len >= cap && !(buf = realloc(buf, cap += 4096)))
+			fatal("realloc failed");
+	}
+
+	for (i=0; i<n; i++) {
+		/* rewind only if we need to */
+		if ((pos && line > ranges[i].from) ||
+		    (pos && line == ranges[i].from && buf[pos-1] == '\n')) {
+			line = 1;
+			pos = 0;
+		}
+
+		for (; pos<len; pos++) {
+			if (line >= ranges[i].from)
+				putchar(buf[pos]);
+			if (buf[pos] == '\n' && ++line > ranges[i].to)
+				break;
+		}
+	}
+}
+
 int
 main(int argc, char **argv)
 {
 	struct range ranges[64];
-	int n=0, i=0, line=1, c;
+	int n=0, i=0, singlepass=1;
 
 	if (argc < 2) {
 		fputs("usage: rng [from]:[to] ...\n", stderr);
@@ -82,19 +129,15 @@ main(int argc, char **argv)
 			fatal("invalid range format: '%s'", argv[i+1]);
 		if (ranges[i].from > ranges[i].to)
 			fatal("end before start: '%s'", argv[1+1]);
-		if (i && ranges[i-1].from >= ranges[i].to)
-			fatal("range '%s' precedes '%s'", argv[i], argv[i+1]);
-		if (i && ranges[i-1].to >= ranges[i].from)
-			fatal("range '%s' overlaps '%s'", argv[i], argv[i+1]);
+		if ((i && ranges[i-1].from >= ranges[i].to) ||
+		    (i && ranges[i-1].to >= ranges[i].from))
+			singlepass = 0;
 	}
 
-	i = 0;
-	while ((c = getchar()) != EOF) {
-		if (line >= ranges[i].from)
-			putchar(c);
-		if (c == '\n' && ++line > ranges[i].to && ++i >= n)
-			break;
-	}
+	if (singlepass)
+		process_singlepass(ranges, n);
+	else
+		process_buffered(ranges, n);
 
 	return 0;
 }

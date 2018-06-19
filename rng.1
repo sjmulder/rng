@@ -14,7 +14,8 @@ copies the specified line ranges from standard input to standard output.
 Ranges are specified as inclusive start and end line numbers.
 The first line is numbered 1.
 .Pp
-Ranges must not overlap or backtrack, that is to say, any range's
+Ranges may overlap or backtrack,
+but this will cause the input to be buffered in its entirety.
 .Ar from
 must be greater than the previous range's
 .Ar to .

@@ -12,8 +12,8 @@ Copy a range of lines from standard input to standard output.
 output. Ranges are specified as inclusive start and end line numbers. The
 first line is numbered 1.
 
-Ranges must not overlap or backtrack, that is to say, any range's _from_ must
-be greater than the previous range's _to_.
+Ranges may overlap or backtrack, but this will cause the input to be buffered
+in its entirety.
 
 ## Examples
 
