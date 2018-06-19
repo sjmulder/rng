@@ -68,6 +68,8 @@ process_singlepass(struct range *ranges, int n)
 {
 	int i=0, line=1, c;
 
+	assert(ranges);
+
 	while ((c = getchar()) != EOF) {
 		if (line >= ranges[i].from)
 			putchar(c);
@@ -82,6 +84,8 @@ process_buffered(struct range *ranges, int n)
 	char *buf;
 	size_t cap=4096, len=0, nread, pos=0;
 	int i, line=1;
+
+	assert(ranges);
 
 	if (!(buf = malloc(cap)))
 		fatal("malloc failed");
