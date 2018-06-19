@@ -4,22 +4,22 @@ Copy a range of lines from standard input to standard output.
 
 ## Synopsis
 
-**rng** _from_[,_to_]
+**rng** [_from_]:[_to_] ...
 
 ## Description
 
-**rng** copies lines _from_ through _to_ (inclusive) from standard input to
-standard output. Lines start at number 1.
+**rng** copies the specified line ranges from standard input to standard
+output. Ranges are specified as inclusive start and end line numbers. The
+first line is numbered 1.
+
+Ranges must not overlap or backtrack, that is to say, any range's _from_ must
+be greater than the previous range's _to_.
 
 ## Examples
 
-Get lines 7-15 in a file:
+Get the lines 2-5 and 10-end:
 
-    $ rng 7,15 <file.txt
-
-Skip the first 4 lines of input.
-
-    $ echo -e "First\nSecond\nThird\nFourth\nFifth\n" | rng 5
+    $ rng 2:5 10: <file.txt
 
 ## Building
 
