@@ -1,0 +1,6 @@
+CFLAGS = /nologo /W3 /D_CRT_SECURE_NO_WARNINGS
+
+all: rng.exe
+
+clean:
+	-del rng.exe
