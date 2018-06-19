@@ -23,10 +23,11 @@ Get the lines 2-5 and 10-end:
 
 ## Building
 
+Unix-likes:
+
     make
 
-To install or uninstall:
-
+    # optionally
     make install
     make uninstall
 
