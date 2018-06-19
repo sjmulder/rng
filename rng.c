@@ -27,6 +27,13 @@ fatal(const char *fmt, ...)
 	exit(1);
 }
 
+/*
+ * Parses a range in the form [from],[to] where `from` and `to` are both
+ * positive numbers that fit an int. Either may be omitted, in which case they
+ * are assigend 1 and INT_MAX respectively.
+ *
+ * Returns 0 on success, or -1 on failure.
+ */
 static int
 parse_range(char *s, struct range *range)
 {
