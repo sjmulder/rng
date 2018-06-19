@@ -17,9 +17,13 @@ The first line is numbered 1.
 Ranges may overlap or backtrack,
 but this will cause the input to be buffered in its entirety.
 .Sh EXAMPLES
-Get lines 2 through 5 and 10 until end of a file:
+Output lines 10-end and 2-5 of a file:
 .Pp
-.Dl $ rng 2:5 10: <file.txt
+.Dl $ rng 10: 2:5 <file.txt
+.Pp
+Output a file twice:
+.Pp
+.Dl "$ rng : : <file.txt"
 .Sh AUTHORS
 Originally by
 .An Nickolas Burr

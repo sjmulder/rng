@@ -17,9 +17,13 @@ in its entirety.
 
 ## Examples
 
-Get the lines 2-5 and 10-end:
+Output lines 10-end and 2-5 of a file:
 
-    $ rng 2:5 10: <file.txt
+    $ rng 10: 2:5 <file.txt
+
+Output a file twice:
+
+    $ rng : : <file.txt
 
 ## Building
 
