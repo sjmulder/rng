@@ -31,6 +31,10 @@ Unix-likes:
     make install
     make uninstall
 
+Visual C++, from the Developer Command Prompt:
+
+    nmake /f Makefile.msvc
+
 ## Authors
 
 Originally by Nickolas Burr (<nickolasburr@gmail.com>). Rewritten by
