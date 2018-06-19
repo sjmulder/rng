@@ -133,8 +133,7 @@ main(int argc, char **argv)
 			fatal("invalid range format: '%s'", argv[i+1]);
 		if (ranges[i].from > ranges[i].to)
 			fatal("end before start: '%s'", argv[1+1]);
-		if ((i && ranges[i-1].from >= ranges[i].to) ||
-		    (i && ranges[i-1].to >= ranges[i].from))
+		if (i && ranges[i-1].to >= ranges[i].from)
 			singlepass = 0;
 	}
 
