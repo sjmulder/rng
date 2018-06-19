@@ -10,6 +10,7 @@
 
 struct range {
 	int from, to;
+	char *fromptr, *toptr; /* used by process_buffered() */
 };
 
 static void
@@ -82,8 +83,8 @@ static void
 process_buffered(struct range *ranges, int n)
 {
 	char *buf;
-	size_t cap=4096, len=0, nread, pos=0;
-	int i, line=1;
+	size_t cap=4096, len=0, nread, pos;
+	int i, line=1, newline=1;
 
 	assert(ranges);
 
@@ -97,20 +98,30 @@ process_buffered(struct range *ranges, int n)
 			fatal("realloc failed");
 	}
 
-	for (i=0; i<n; i++) {
-		/* rewind only if we need to */
-		if ((pos && line > ranges[i].from) ||
-		    (pos && line == ranges[i].from && buf[pos-1] == '\n')) {
-			line = 1;
-			pos = 0;
+	/* assign all range boundary pointers in one go */
+	for (pos=0; pos<len; pos++) {
+		if (newline) {
+			for (i=0; i<n; i++) {
+				if (ranges[i].from == line)
+					ranges[i].fromptr = buf+pos;
+				if (ranges[i].to == line-1)
+					ranges[i].toptr = buf+pos;
+			}
+			line++;
 		}
 
-		for (; pos<len; pos++) {
-			if (line >= ranges[i].from)
-				putchar(buf[pos]);
-			if (buf[pos] == '\n' && ++line > ranges[i].to)
-				break;
-		}
+		newline = buf[pos] == '\n';
+	}
+
+	/* now it's a matter of blitting bytes */
+	for (i=0; i<n; i++) {
+		if (!ranges[i].fromptr) /* `from` is past EOF, so skip */
+			continue;
+		if (!ranges[i].toptr) /* `end` is past EOF */
+			ranges[i].toptr = buf+len;
+
+		fwrite(ranges[i].fromptr, 1, ranges[i].toptr -
+		    ranges[i].fromptr, stdout);
 	}
 }
 
