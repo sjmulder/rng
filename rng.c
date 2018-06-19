@@ -98,6 +98,9 @@ process_buffered(struct range *ranges, int n)
 			fatal("realloc failed");
 	}
 
+	for (i=0; i<n; i++)
+		ranges[i].fromptr = ranges[i].toptr = NULL;
+
 	/* assign all range boundary pointers in one go */
 	for (pos=0; pos<len; pos++) {
 		if (newline) {
