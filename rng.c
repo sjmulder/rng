@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>	/* exit */
 #include <stdarg.h>
+#include <assert.h>
 #include <limits.h>
 
 #define LEN(a) (sizeof(a)/sizeof(*a))
@@ -16,6 +17,8 @@ fatal(const char *fmt, ...)
 {
 	va_list ap;
 
+	assert(fmt);
+
 	va_start(ap, fmt);
 	fputs("rng: ", stderr);
 	vfprintf(stderr, fmt, ap);
@@ -28,6 +31,9 @@ static int
 parse_range(char *s, struct range *range)
 {
 	char *endptr;
+
+	assert(s);
+	assert(range);
 
 	if (*s == ':') {
 		range->from = 1;
