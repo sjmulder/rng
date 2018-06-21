@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>	/* exit */
+#include <string.h>	/* memchr */
 #include <stdarg.h>
 #include <assert.h>
 #include <limits.h>
@@ -10,7 +11,6 @@
 
 struct range {
 	int from, to;
-	char *fromptr, *toptr; /* used by process_buffered() */
 };
 
 static void
@@ -26,6 +26,27 @@ fatal(const char *fmt, ...)
 	fputs("\n", stderr);
 	va_end(ap);
 	exit(1);
+}
+
+static char *
+readall(FILE *f, size_t *lenp)
+{
+	char *buf;
+	size_t cap=4096, len=0, nread;
+
+	assert(f);
+
+	if (!(buf = malloc(cap)))
+		fatal("malloc failed");
+
+	while ((nread = fread(buf+len, 1, cap-len, stdin)) > 0) {
+		len += nread;
+		if (len >= cap && !(buf = realloc(buf, cap += 4096)))
+			fatal("realloc failed");
+	}
+
+	*lenp = len;
+	return buf;
 }
 
 /*
@@ -64,6 +85,53 @@ parse_range(char *s, struct range *range)
 	return 0;
 }
 
+/*
+ * Returns the start the given line (1-based) in the buffer, or NULL if not
+ * found.
+ */
+static char *
+find_start(char *buf, int line, size_t len)
+{
+	char *p;
+
+	assert(buf);
+	assert(line > 0);
+
+	p = buf;
+	while (--line) {
+		if (!(p = memchr(p, '\n', buf+len-p)))
+			return NULL;
+		if (++p >= buf+len) /* skip \n */
+			return NULL;
+	}
+
+	return p;
+}
+
+/*
+ * Returns the end (inclusive) of the given line (1-based) in the buffer, or
+ * &buf[len-1] if not found.
+ */
+static char *
+find_end(char *buf, int line, size_t len)
+{
+	char *p;
+
+	assert(buf);
+	assert(line > 0);
+	assert(len > 0); /* because of buf[len-1] cap */
+
+	p = buf;
+	while (line--) {
+		if (++p >= buf+len)
+			return buf+len-1; /* skip \n */
+		if (!(p = memchr(p, '\n', buf+len-p)))
+			return buf+len-1;
+	}
+
+	return p;
+}
+
 static void
 process_singlepass(struct range *ranges, int n)
 {
@@ -82,49 +150,25 @@ process_singlepass(struct range *ranges, int n)
 static void
 process_buffered(struct range *ranges, int n)
 {
-	char *buf;
-	size_t cap=4096, len=0, nread, pos;
-	int i, line=1, newline=1;
+	char *buf, *start, *end;
+	size_t len;
+	int i, nlines;
 
 	assert(ranges);
+	assert(n >= 0);
 
-	if (!(buf = malloc(cap)))
-		fatal("malloc failed");
+	buf = readall(stdin, &len);
 
-	/* read the entire file first */
-	while ((nread = fread(buf+len, 1, cap-len, stdin)) > 0) {
-		len += nread;
-		if (len >= cap && !(buf = realloc(buf, cap += 4096)))
-			fatal("realloc failed");
-	}
-
-	for (i=0; i<n; i++)
-		ranges[i].fromptr = ranges[i].toptr = NULL;
-
-	/* assign all range boundary pointers in one go */
-	for (pos=0; pos<len; pos++) {
-		if (newline) {
-			for (i=0; i<n; i++) {
-				if (ranges[i].from == line)
-					ranges[i].fromptr = buf+pos;
-				if (ranges[i].to == line-1)
-					ranges[i].toptr = buf+pos;
-			}
-			line++;
-		}
-
-		newline = buf[pos] == '\n';
-	}
-
-	/* now it's a matter of blitting bytes */
 	for (i=0; i<n; i++) {
-		if (!ranges[i].fromptr) /* `from` is past EOF, so skip */
-			continue;
-		if (!ranges[i].toptr) /* `end` is past EOF */
-			ranges[i].toptr = buf+len;
+		nlines = ranges[i].to - ranges[i].from + 1;
+		assert(nlines > 0);
 
-		fwrite(ranges[i].fromptr, 1, ranges[i].toptr -
-		    ranges[i].fromptr, stdout);
+		if (!(start = find_start(buf, ranges[i].from, len)))
+			continue;
+		if (!(end = find_end(start, nlines, buf+len-start)))
+			continue;
+
+		fwrite(start, end-start+1, 1, stdout);
 	}
 }
 
