@@ -31,7 +31,7 @@ fatal(const char *fmt, ...)
 /*
  * Parses a range in the form [from],[to] where `from` and `to` are both
  * positive numbers that fit an int. Either may be omitted, in which case they
- * are assigend 1 and INT_MAX respectively.
+ * are assigned 1 and INT_MAX respectively.
  *
  * Returns 0 on success, or -1 on failure.
  */
