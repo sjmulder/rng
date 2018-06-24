@@ -22,8 +22,8 @@ output. Ranges can be specified as follows:
 Line numbers go up from 1 relative to the start of input, and down
 from -1 relative to the end of input.
 
-Use of negative line numbers, overlapping ranges, or backtring ranges causes
-the file to be buffered in its entirety.
+Use of negative line numbers, overlapping ranges, or backtracking ranges
+causes the file to be buffered in its entirety.
 
 ## Examples
 
