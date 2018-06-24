@@ -31,9 +31,9 @@ Output lines 2-5 of a file:
 
     rng 2:5 <file.txt
 
-Output the first and last three lines of a file:
+Output the first three, fifth,  and last three lines of a file:
 
-    rng :3 -3: <file.txt
+    rng :3 5 -3: <file.txt
 
 Output a file twice:
 
