@@ -43,12 +43,15 @@ Use of negative line numbers, overlapping ranges, or backtracking ranges
 causes the file to be buffered in its entirety.
 .Sh EXAMPLES
 Output lines 2-5 of a file:
+.Pp
 .Dl "rng 2:5 <file.txt"
 .Pp
 Output the first and last three lines of a file:
+.Pp
 .Dl "rng :3 -3: <file.txt"
 .Pp
 Output a file twice:
+.Pp
 .Dl "rng : : <file.txt"
 .Sh AUTHORS
 Originally by
