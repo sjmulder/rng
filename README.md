@@ -11,13 +11,13 @@ Copy ranges of lines from standard input to standard output.
 **rng** copies the specified line ranges from standard input to standard
 output. Ranges can be specified as follows:
 
-|-------------|-------------------------------------------|
+| Syntax      | Meaning                                   |
+| ----------- | ----------------------------------------- |
 | _from_:_to_ | Line _from_ through _to_ (inclusive).     |
 | _from_:     | Line _from_ to end of input.              |
 | :_to_       | Start of input to line _end_ (inclusive). |
 | :           | The entire input.                         |
-| line        | Line _line_ only.                         |
-
+| _line_      | Line _line_ only.                         |
 
 Line numbers go up from 1 relative to the start of input, and down
 from -1 relative to the end of input.
