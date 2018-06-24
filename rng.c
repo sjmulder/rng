@@ -55,6 +55,7 @@ readall(FILE *f, size_t *lenp)
  *   "from:"    _from_ to end (.to = INT_MAX)
  *   ":to"      start to _to_ (.from = 1)
  *   ":"        start to end  (.from = 1, .to = INT_MAX)
+ *   "line"     single line (.from = line, .to = line)
  *
  * Line numbers are 1-based. Negative line numbers are relative to the end of
  * the file, with -1 being the last line and -2 the next-to-last. 0 is not a
@@ -75,7 +76,13 @@ parse_range(char *s, struct range *range)
 		s++;
 	} else {
 		range->from = (int)strtol(s, &endptr, 10);
-		if (*endptr != ':' || range->from == 0)
+		if (range->from == 0)
+			return -1;
+		if (!*endptr) {
+			range->to = range->from;
+			return 0;
+		}
+		if (*endptr != ':')
 			return -1;
 		s = endptr + 1;
 	}
@@ -220,7 +227,7 @@ main(int argc, char **argv)
 	int n=0, i=0, singlepass=1;
 
 	if (argc < 2) {
-		fputs("usage: rng [from]:[to] ...\n", stderr);
+		fputs("usage: rng range... (see `man rng`)\n", stderr);
 		return 1;
 	}
 

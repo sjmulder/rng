@@ -7,10 +7,35 @@
 .Nd copy ranges of lines
 .Sh SYNOPSIS
 .Nm
-[from]:[to]...
+.Ar range ...
 .Sh DESCRIPTION
 .Nm
 copies the specified line ranges from standard input to standard output.
+Ranges can be specified as follows:
+.Pp
+.Bl -tag -width indent-two -compact
+.It "from:to"
+Line
+.Em from
+through
+.Em to
+(inclusive).
+.It "from:"
+Line
+.Em from
+to end of input.
+.It ":to"
+Start of input to line
+.Em end
+(inclusive).
+.It ":"
+The entire input.
+.It line
+Line
+.Em line
+only.
+.El
+.Pp
 Line numbers go up from 1 relative to the start of input,
 and down from -1 relative to the end of input.
 .Pp

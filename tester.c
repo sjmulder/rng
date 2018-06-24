@@ -62,6 +62,10 @@ main(void)
 	expect_int(-2, range.from);
 	expect_int(-1, range.to);
 
+	expect_int(0, parse_range("2", &range));
+	expect_int(2, range.from);
+	expect_int(2, range.to);
+
 	expect_ptr(three,   find_start(three, 1, sizeof(three)-1));
 	expect_ptr(three+4, find_start(three, 2, sizeof(three)-1));
 	expect_ptr(three+8, find_start(three, 3, sizeof(three)-1));
