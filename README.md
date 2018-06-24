@@ -4,7 +4,7 @@ Copy ranges of lines from standard input to standard output.
 
 ## Synopsis
 
-**rng** [_from_]:[_to_] ...
+**rng** _range_ ...
 
 ## Description
 
