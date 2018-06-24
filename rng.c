@@ -50,9 +50,15 @@ readall(FILE *f, size_t *lenp)
 }
 
 /*
- * Parses a range in the form [from],[to] where `from` and `to` are both
- * positive numbers that fit an int. Either may be omitted, in which case they
- * are assigned 1 and INT_MAX respectively.
+ * Parses a line number range in one of the following forms:
+ *   "from:to"  _from_ to _to_
+ *   "from:"    _from_ to end (.to = INT_MAX)
+ *   ":to"      start to _to_ (.from = 1)
+ *   ":"        start to end  (.from = 1, .to = INT_MAX)
+ *
+ * Line numbers are 1-based. Negative line numbers are relative to the end of
+ * the file, with -1 being the last line and -2 the next-to-last. 0 is not a
+ * valid value.
  *
  * Returns 0 on success, or -1 on failure.
  */
@@ -69,7 +75,7 @@ parse_range(char *s, struct range *range)
 		s++;
 	} else {
 		range->from = (int)strtol(s, &endptr, 10);
-		if (*endptr != ':' || range->from < 1)
+		if (*endptr != ':' || range->from == 0)
 			return -1;
 		s = endptr + 1;
 	}
@@ -78,7 +84,7 @@ parse_range(char *s, struct range *range)
 		range->to = INT_MAX;
 	else {
 		range->to = (int)strtol(s, &endptr, 10);
-		if (*endptr || range->to < 1)
+		if (*endptr || range->to == 0)
 			return -1;
 	}
 
@@ -86,8 +92,11 @@ parse_range(char *s, struct range *range)
 }
 
 /*
- * Returns the start the given line (1-based) in the buffer, or NULL if not
- * found.
+ * Returns a pointer to the first character on the given line, searching
+ * forward if >0 or backward from the end if <0. Line 1 is the first, -1 the
+ * last.
+ *
+ * If not found, forward searches return NULL, and backward searches `buf`.
  */
 static char *
 find_start(char *buf, int line, size_t len)
@@ -95,13 +104,29 @@ find_start(char *buf, int line, size_t len)
 	char *p;
 
 	assert(buf);
-	assert(line > 0);
+	assert(line != 0);
+	assert(len > 0); /* because of buf[len-1] cap */
 
-	p = buf;
-	while (--line) {
-		if (!(p = memchr(p, '\n', buf+len-p)))
-			return NULL;
-		if (++p >= buf+len) /* skip \n */
+	if (line > 0) {
+		p = buf;
+		while (--line) {
+			if (!(p = memchr(p, '\n', buf+len-p)))
+				return NULL;
+			if (++p >= buf+len) /* skip \n */
+				return NULL;
+		}
+	} else {
+		p = buf+len-1;
+		if (*p == '\n')
+			line--; /* compensate for trailing \n */
+		while (line++) {
+			if (!(p = memrchr(buf, '\n', p-buf+1)))
+				return buf;
+			if (--p < buf) /* skip \n */
+				return buf;
+		}
+		/* p points to the char before \n, we need the char after */
+		if ((p+=2) >= buf+len)
 			return NULL;
 	}
 
@@ -109,8 +134,12 @@ find_start(char *buf, int line, size_t len)
 }
 
 /*
- * Returns the end (inclusive) of the given line (1-based) in the buffer, or
- * &buf[len-1] if not found.
+ * Returns a character to the last character on the given line, searching
+ * forward if >0 or backward from the end if <0. Line 1 is the first, -1 the
+ * last.
+ *
+ * If not found, forward searches return buf+len-1, and backward searches
+ * NULL.
  */
 static char *
 find_end(char *buf, int line, size_t len)
@@ -118,15 +147,29 @@ find_end(char *buf, int line, size_t len)
 	char *p;
 
 	assert(buf);
-	assert(line > 0);
+	assert(line != 0);
 	assert(len > 0); /* because of buf[len-1] cap */
 
-	p = buf;
-	while (line--) {
-		if (++p >= buf+len)
-			return buf+len-1; /* skip \n */
-		if (!(p = memchr(p, '\n', buf+len-p)))
-			return buf+len-1;
+	if (line > 0) {
+		p = buf;
+		while (line--) {
+			if (++p >= buf+len)
+				return buf+len-1; /* skip \n */
+			if (!(p = memchr(p, '\n', buf+len-p)))
+				return buf+len-1;
+		}
+	} else {
+		p = buf+len-1;
+		if (*p == '\n')
+			line--; /* compensate for trailing \n */
+		while (1) {
+			if (!(p = memrchr(buf, '\n', p-buf+1)))
+				return NULL;
+			if (++line >= -1) /* check before --p */
+				break;
+			if (--p < buf) /* skip \n */
+				return NULL;
+		}
 	}
 
 	return p;
@@ -152,7 +195,7 @@ process_buffered(struct range *ranges, int n)
 {
 	char *buf, *start, *end;
 	size_t len;
-	int i, nlines;
+	int i;
 
 	assert(ranges);
 	assert(n >= 0);
@@ -160,18 +203,16 @@ process_buffered(struct range *ranges, int n)
 	buf = readall(stdin, &len);
 
 	for (i=0; i<n; i++) {
-		nlines = ranges[i].to - ranges[i].from + 1;
-		assert(nlines > 0);
-
 		if (!(start = find_start(buf, ranges[i].from, len)))
 			continue;
-		if (!(end = find_end(start, nlines, buf+len-start)))
+		if (!(end = find_end(buf, ranges[i].to, len)))
 			continue;
-
-		fwrite(start, end-start+1, 1, stdout);
+		if (end >= start)
+			fwrite(start, end-start+1, 1, stdout);
 	}
 }
 
+#ifndef TEST
 int
 main(int argc, char **argv)
 {
@@ -189,10 +230,13 @@ main(int argc, char **argv)
 	for (i = 0; i<n; i++) {
 		if (parse_range(argv[i+1], &ranges[i]) == -1)
 			fatal("invalid range format: '%s'", argv[i+1]);
-		if (ranges[i].from > ranges[i].to)
-			fatal("end before start: '%s'", argv[1+1]);
-		if (i && ranges[i-1].to >= ranges[i].from)
-			singlepass = 0;
+		if (singlepass) {
+			if (ranges[i].from < 0 || ranges[i].to < 0)
+				singlepass = 0;
+			else if (i && ranges[i-1].to >= ranges[i].from)
+				singlepass = 0;
+		}
+
 	}
 
 	if (singlepass)
@@ -202,3 +246,4 @@ main(int argc, char **argv)
 
 	return 0;
 }
+#endif /* TEST */

@@ -1,6 +1,6 @@
 # rng
 
-Copy a range of lines from standard input to standard output.
+Copy ranges of lines from standard input to standard output.
 
 ## Synopsis
 
@@ -9,21 +9,28 @@ Copy a range of lines from standard input to standard output.
 ## Description
 
 **rng** copies the specified line ranges from standard input to standard
-output. Ranges are specified as inclusive start and end line numbers. The
-first line is numbered 1.
+output. Line numbers go up from 1 relative to the start of input, and down
+from -1 relative to the end of input.
+
+Use of negative line numbers, overlapping ranges, or backtring ranges causes
+the file to be buffered in its entirety.
 
 Ranges may overlap or backtrack, but this will cause the input to be buffered
 in its entirety.
 
 ## Examples
 
-Output lines 10-end and 2-5 of a file:
+Output lines 2-5 of a file:
 
-    $ rng 10: 2:5 <file.txt
+    rng 2:5 <file.txt
+
+Output the first and last three lines of a file:
+
+    rng :3 -3: <file.txt
 
 Output a file twice:
 
-    $ rng : : <file.txt
+    rng : : <file.txt
 
 ## Building
 
@@ -32,6 +39,7 @@ Unix-likes:
     make
 
     # optionally
+    make test
     make install
     make uninstall
 

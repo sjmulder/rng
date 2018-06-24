@@ -1,29 +1,30 @@
 .\" rng.1 - Copyright (c) 2018, Sijmen J. Mulder
-.Dd June 17, 2018
+.Dd June 24, 2018
 .Dt RNG 1
 .Os
 .Sh NAME
 .Nm rng
-.Nd copy a range of lines
+.Nd copy ranges of lines
 .Sh SYNOPSIS
 .Nm
 [from]:[to]...
 .Sh DESCRIPTION
 .Nm
 copies the specified line ranges from standard input to standard output.
-Ranges are specified as inclusive start and end line numbers.
-The first line is numbered 1.
+Line numbers go up from 1 relative to the start of input,
+and down from -1 relative to the end of input.
 .Pp
-Ranges may overlap or backtrack,
-but this will cause the input to be buffered in its entirety.
+Use of negative line numbers, overlapping ranges, or backtring ranges
+causes the file to be buffered in its entirety.
 .Sh EXAMPLES
-Output lines 10-end and 2-5 of a file:
+Output lines 2-5 of a file:
+.Dl "rng 2:5 <file.txt"
 .Pp
-.Dl $ rng 10: 2:5 <file.txt
+Output the first and last three lines of a file:
+.Dl "rng :3 -3: <file.txt"
 .Pp
 Output a file twice:
-.Pp
-.Dl "$ rng : : <file.txt"
+.Dl "rng : : <file.txt"
 .Sh AUTHORS
 Originally by
 .An Nickolas Burr
