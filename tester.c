@@ -1,3 +1,5 @@
+/* tester.c - Copyright (c) 2018 Sijmen J. Mulder, see LICENSE.md */
+
 #define TEST
 #include "rng.c"
 
