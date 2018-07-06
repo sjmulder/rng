@@ -1,7 +1,7 @@
-prefix ?= /usr/local
-bindir ?= $(prefix)/bin
-mandir ?= $(prefix)/man
-man1dir ?= $(mandir)/man1
+# BSD conventions by default, override to taste
+prefix  ?= /usr/local
+bindir  ?= $(prefix)/bin
+man1dir ?= $(prefix)/man/man1
 
 CFLAGS += -Wall -Wextra -pedantic
 
