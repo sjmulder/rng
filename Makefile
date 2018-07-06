@@ -14,6 +14,7 @@ clean:
 	rm -f rng tester
 
 install: rng
+	install -d $(bindir) $(man1dir)
 	install rng $(bindir)/
 	install rng.1 $(man1dir)/
 
