@@ -5,6 +5,8 @@ man1dir ?= $(prefix)/man/man1
 
 CFLAGS += -ansi -g
 CFLAGS += -Wall -Wextra -pedantic
+# for memrchr
+CFLAGS += -D_GNU_SOURCE
 
 all: rng tester
 
