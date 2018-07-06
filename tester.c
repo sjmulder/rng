@@ -12,8 +12,8 @@ static void
 expect_ptr_(void *x, void *val, int line, char *expr)
 {
 	if (val != x) {
-		fprintf(stderr, "%d: %s = %p, expected %p (%+td)\n", line,
-		    expr, val, x, (char*)val - (char*)x);
+		fprintf(stderr, "%d: %s = %p, expected %p (%+ld)\n", line,
+		    expr, val, x, (long)((char*)val - (char*)x));
 		nfail++;
 	}
 }
