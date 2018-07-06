@@ -3,6 +3,7 @@ prefix  ?= /usr/local
 bindir  ?= $(prefix)/bin
 man1dir ?= $(prefix)/man/man1
 
+CFLAGS += -ansi -g
 CFLAGS += -Wall -Wextra -pedantic
 
 all: rng tester
