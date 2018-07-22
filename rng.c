@@ -13,6 +13,23 @@ struct range {
 	int from, to;
 };
 
+/* macOS does not provide memrchr */
+#if defined(__APPLE__)
+static void *
+memrchr(const void *s, int c, size_t n)
+{
+	const unsigned char *p;
+
+	while (n) {
+		p = (const unsigned char *)s + --n;
+		if (*p == c)
+			return (void *)p;
+	}
+
+	return NULL;
+}
+#endif
+
 static void
 fatal(const char *fmt, ...)
 {
