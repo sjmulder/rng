@@ -17,8 +17,8 @@ clean:
 
 install: rng
 	install -d $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(MANPREFIX)/man1
-	install rng   $(DESTDIR)$(PREFIX)/bin/
-	install rng.1 $(DESTDIR)$(MANPREFIX)/man1/
+	install -m755 rng   $(DESTDIR)$(PREFIX)/bin/
+	install -m644 rng.1 $(DESTDIR)$(MANPREFIX)/man1/
 
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/rng
